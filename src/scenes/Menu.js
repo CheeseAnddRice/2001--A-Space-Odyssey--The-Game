@@ -21,7 +21,7 @@ class Menu extends Phaser.Scene {
         // show menu text
         this.add.text(game.config.width / 2, game.config.height / 2 - game.config.height / 15, '2001: A Space Odyssey', menuConfig).setOrigin(0.5);
         this.add.text(game.config.width / 2, game.config.height / 2, 'Press SPACE to start', menuConfig).setOrigin(0.5);
-        this.add.text(game.config.width / 2, game.config.height / 2 + game.config.height / 7.5, 'Press I for help and credits', menuConfig).setOrigin(0.5);
+        //this.add.text(game.config.width / 2, game.config.height / 2 + game.config.height / 7.5, 'Press I for help and credits', menuConfig).setOrigin(0.5);
 
         // define keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
