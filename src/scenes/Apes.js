@@ -15,6 +15,7 @@ class Apes extends Phaser.Scene {
     create() {
         // Variables
         this.physics.world.gravity.y = 3000;
+        this.foundBones = false;
 
         // Define keys
         cursors = this.input.keyboard.createCursorKeys();
@@ -54,16 +55,29 @@ class Apes extends Phaser.Scene {
         })
 
         // Enemy
-        this.enemy = this.physics.add.sprite(this.game.config.width - this.game.config.width / 10, game.config.height / 2, 'enemy', 0).setOrigin(0.5, 0);
+        //this.enemy = this.physics.add.sprite(this.game.config.width - this.game.config.width / 10, game.config.height / 2, 'enemy', 0).setOrigin(0.5, 0);
+
+        this.anims.create({
+            key: 'enemyIdle',
+            frames: this.anims.generateFrameNumbers('enemy', {start: 0, end: 2}),
+            frameRate: 7,
+            repeat: -1
+        });
+
+        this.enemy = new EnemyApe(this, this.game.config.width - this.game.config.width / 10, game.config.height / 2, 'enemy', 0, this.player, 100, 300).setOrigin(0.5, 0);
         this.physics.add.collider(this.enemy, this.ground);
+        this.physics.add.collider(this.enemy, this.player);
+
+        //this.enemy.anims.play('enemyIdle');
 
         // Bones
         this.bones = this.add.sprite(game.config.width / 5, game.config.height / 2 + 16, 'bones').setOrigin(0.5, 0);
         this.bones.alpha = 0;
     }
 
-    update() {
-        this.player.update();
+    update(time, delta) {
+        this.player.update(delta);
+        this.enemy.update();
 
         // Reveal bones if monolith contacted
         if(this.bones.alpha == 0) {
@@ -72,8 +86,8 @@ class Apes extends Phaser.Scene {
             }
         // Once bones revealed, check for player interaction and give bone to player
         } else {
-            if(Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), this.bones.getBounds())) {
-                console.log("Found bones");
+            if(!this.foundBones && Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), this.bones.getBounds())) {
+                this.foundBones = true;
             }
         }
     }

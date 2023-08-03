@@ -12,7 +12,15 @@ class PlayerApe extends Phaser.Physics.Arcade.Sprite {
 
         this.setMaxVelocity(this.MAX_X_VEL, this.MAX_Y_VEL);
 
+        // States: idle, walking, jumping, stunned
         this.state = '';
+
+        // Stun time is how long to be stunned, stun timer tracks how much longer player will be stunned for
+        // (timer of 0 or less means not stunned)
+        this.stunTime = 200;
+        this.stunTimer = 0;
+        this.knockbackPower = 10;
+        this.stunLeft = true; // Left or right stun
 
         }
 
@@ -20,13 +28,23 @@ class PlayerApe extends Phaser.Physics.Arcade.Sprite {
         this.load.spritesheet('player', './assets/playerApe.png', {frameWidth: 32, frameHeight: 32});
     }
 
-    update() {
+    update(delta) {
+        // Decrement stuntimer and move player
+        if(this.stunTimer > 0) {
+            this.stunTimer -= delta;
+            if(this.stunLeft) {
+                this.x -= this.knockbackPower;
+            } else {
+                this.x += this.knockbackPower;
+            }
+        }
+
         // Return from jump to idle on landing
         if(this.body.touching.down && this.state == 'jumping') {
             this.state = 'idle';
             this.anims.play('idle');
         }
-        
+
         if(cursors.left.isDown && this.x > this.width / 2) {
             this.body.setVelocityX(-this.speed);
             this.setFlip(true, false);
@@ -58,5 +76,27 @@ class PlayerApe extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    knockback(enemy) {
+        if(enemy.x > this.x) {
+            this.stunLeft = true;
+        } else {
+            this.stunLeft = false;
+        }
+        this.stunTimer = this.stunTime;
+        //direction = new Phaser.Math.Vector2(this.x - enemy.x), (this.y - enemy.y);
+        //console.log(direction.x);
+        //direction = normalize(direction);
+        //console.log(direction);
+        /*let direction;
+        // Push left
+        if(enemy.x > this.x) {
+            direction = -this.knockbackPower;
+        }
+        else {
+            direction = this.knockbackPower;
+        }
+        this.setVelocityX(direction * 100000);
+        */
+    }
 
 }
