@@ -3,6 +3,8 @@ Marcus Williamson
 2001: A Space Odyssey
 9 hours
 
+Only contains 1st intended scene
+
 */
 
 let config = {
@@ -28,6 +30,7 @@ let config = {
 }
 
 let game = new Phaser.Game(config);
+let menuConfig;
 
 let cursors;
 let keyLEFT, keyRIGHT, keyUP, keyDOWN, keySPACE, keyI;

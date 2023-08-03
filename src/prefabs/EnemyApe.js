@@ -13,6 +13,7 @@ class EnemyApe extends Phaser.Physics.Arcade.Sprite {
         this.leftBound = left;
         this.rightBound = right;
         this.movingLeft = true;
+        this.dead = false;
 
         //this.setMaxVelocity(this.MAX_X_VEL, this.MAX_Y_VEL);
 

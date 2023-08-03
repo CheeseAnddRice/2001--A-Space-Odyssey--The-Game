@@ -26,6 +26,12 @@ class Apes extends Phaser.Scene {
         this.ground.body.immovable = true;
         this.ground.body.allowGravity = false;
 
+        // Text
+        menuConfig.fontSize = '18px';
+        this.add.text(game.config.width / 2, game.config.height / 15, 'L/R arrows to move, up arrow to jump', menuConfig).setOrigin(0.5);
+        this.endText = this.add.text(game.config.width / 2, game.config.height / 3.25, 'Game won', menuConfig).setOrigin(0.5);
+        this.endText.alpha = 0;
+
         // Monolith
         this.monolith = this.add.sprite(this.game.config.width / 2, this.game.config.height / 2 - game.config.height / 10, 'monolith').setOrigin(0.5, 0);
 
@@ -83,8 +89,16 @@ class Apes extends Phaser.Scene {
 
     update(time, delta) {
         this.player.update(delta);
+        let deadCount = 0;
         for (let e of this.enemies) {
-            e.update();
+            if(e.dead) {
+                deadCount++;
+            } else {
+                e.update();
+            }
+        }
+        if (deadCount == this.enemies.length) {
+            this.endText.alpha = 1;
         }
 
         // Reveal bones if monolith contacted
@@ -111,5 +125,6 @@ class Apes extends Phaser.Scene {
         this.bone.alpha = 0;
         this.player.boneEquipped = false;
         ape.setPosition(10000, 0); // quick fix to 'delete' it because of null references
+        ape.dead = true;
     }
 }
