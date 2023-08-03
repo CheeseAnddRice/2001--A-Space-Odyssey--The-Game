@@ -10,12 +10,12 @@ class Apes extends Phaser.Scene {
         this.load.spritesheet('enemy', './assets/enemyApe.png', {frameWidth: 64, frameHeight: 64})
         this.load.image('monolith', './assets/monolith.png');
         this.load.image('bones', './assets/bones.png');
+        this.load.image('bone', './assets/bone.png');
     }
 
     create() {
         // Variables
         this.physics.world.gravity.y = 3000;
-        this.foundBones = false;
 
         // Define keys
         cursors = this.input.keyboard.createCursorKeys();
@@ -54,9 +54,7 @@ class Apes extends Phaser.Scene {
             repeat: 0
         })
 
-        // Enemy
-        //this.enemy = this.physics.add.sprite(this.game.config.width - this.game.config.width / 10, game.config.height / 2, 'enemy', 0).setOrigin(0.5, 0);
-
+        // Enemies
         this.anims.create({
             key: 'enemyIdle',
             frames: this.anims.generateFrameNumbers('enemy', {start: 0, end: 2}),
@@ -64,20 +62,30 @@ class Apes extends Phaser.Scene {
             repeat: -1
         });
 
-        this.enemy = new EnemyApe(this, this.game.config.width - this.game.config.width / 10, game.config.height / 2, 'enemy', 0, this.player, 100, 300).setOrigin(0.5, 0);
+        this.enemies = [];
+
+        this.enemy = new EnemyApe(this, 200, game.config.height / 2, 'enemy', 0, this.player, 100, 400).setOrigin(0.5, 0);
         this.physics.add.collider(this.enemy, this.ground);
         this.physics.add.collider(this.enemy, this.player);
+        this.enemies.push(this.enemy);
 
-        //this.enemy.anims.play('enemyIdle');
+        this.enemy2 = new EnemyApe(this, this.game.config.width - this.game.config.width / 9, game.config.height / 2, 'enemy', 0, this.player, 300, 600).setOrigin(0.5, 0);
+        this.physics.add.collider(this.enemy2, this.ground);
+        this.physics.add.collider(this.enemy2, this.player);
+        this.enemies.push(this.enemy2);
 
         // Bones
         this.bones = this.add.sprite(game.config.width / 5, game.config.height / 2 + 16, 'bones').setOrigin(0.5, 0);
         this.bones.alpha = 0;
+        this.bone = this.add.sprite(0, 0, 'bone').setOrigin(0.5);
+        this.bone.alpha = 0;
     }
 
     update(time, delta) {
         this.player.update(delta);
-        this.enemy.update();
+        for (let e of this.enemies) {
+            e.update();
+        }
 
         // Reveal bones if monolith contacted
         if(this.bones.alpha == 0) {
@@ -86,10 +94,22 @@ class Apes extends Phaser.Scene {
             }
         // Once bones revealed, check for player interaction and give bone to player
         } else {
-            if(!this.foundBones && Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), this.bones.getBounds())) {
-                this.foundBones = true;
+            if(!this.player.boneEquipped && Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), this.bones.getBounds())) {
+                this.bone.alpha = 1;
+                this.player.boneEquipped = true;
             }
         }
+
+        // If bone equipped, move it with player
+        if(this.player.boneEquipped) {
+            this.bone.setPosition(this.player.x, this.player.y);
+        }
+
     }
 
+    destroyApe(ape) {
+        this.bone.alpha = 0;
+        this.player.boneEquipped = false;
+        ape.setPosition(10000, 0); // quick fix to 'delete' it because of null references
+    }
 }
