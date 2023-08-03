@@ -5,6 +5,13 @@ Marcus Williamson
 
 Only contains 1st intended scene
 
+Phaser major components:
+-Physics (arcade physics)
+-Text objects
+-Animations
+-Spritesheets
+-Timers(? I use update()'s delta for my own timers)
+
 */
 
 let config = {
