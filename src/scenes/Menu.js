@@ -36,12 +36,7 @@ class Menu extends Phaser.Scene {
 
     update() {
         if(Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            //this.sound.play('sfx_select');
             this.scene.start("apeScene");
-        }
-        if(Phaser.Input.Keyboard.JustDown(keyI)) {
-            //this.sound.play('sfx_select');
-            //this.scene.start('tutorialScene');
         }
     }
 

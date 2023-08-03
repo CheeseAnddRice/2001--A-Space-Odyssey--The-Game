@@ -19,6 +19,7 @@ class Apes extends Phaser.Scene {
 
         // Define keys
         cursors = this.input.keyboard.createCursorKeys();
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // Background and ground
         this.add.sprite(0, 0, 'background1').setOrigin(0, 0);
@@ -26,11 +27,14 @@ class Apes extends Phaser.Scene {
         this.ground.body.immovable = true;
         this.ground.body.allowGravity = false;
 
-        // Text
+        // Text and gameover
         menuConfig.fontSize = '18px';
         this.add.text(game.config.width / 2, game.config.height / 15, 'L/R arrows to move, up arrow to jump', menuConfig).setOrigin(0.5);
-        this.endText = this.add.text(game.config.width / 2, game.config.height / 3.25, 'Game won', menuConfig).setOrigin(0.5);
+        this.endText = this.add.text(game.config.width / 2, game.config.height / 3.5, 'Game won', menuConfig).setOrigin(0.5);
+        this.endText2 = this.add.text(game.config.width / 2, game.config.height / 2.80, 'Press space to return', menuConfig).setOrigin(0.5);
         this.endText.alpha = 0;
+        this.endText2.alpha = 0;
+        this.gameEnded = false;
 
         // Monolith
         this.monolith = this.add.sprite(this.game.config.width / 2, this.game.config.height / 2 - game.config.height / 10, 'monolith').setOrigin(0.5, 0);
@@ -90,15 +94,22 @@ class Apes extends Phaser.Scene {
     update(time, delta) {
         this.player.update(delta);
         let deadCount = 0;
-        for (let e of this.enemies) {
-            if(e.dead) {
-                deadCount++;
-            } else {
-                e.update();
+        if(!this.gameEnded) {
+            for (let e of this.enemies) {
+                if(e.dead) {
+                    deadCount++;
+                } else {
+                    e.update();
+                }
             }
         }
+
+        if(this.gameEnded && Phaser.Input.Keyboard.JustDown(keySPACE)) {
+            this.scene.start("menuScene");
+        }
+
         if (deadCount == this.enemies.length) {
-            this.endText.alpha = 1;
+            this.gameOver();
         }
 
         // Reveal bones if monolith contacted
@@ -126,5 +137,11 @@ class Apes extends Phaser.Scene {
         this.player.boneEquipped = false;
         ape.setPosition(10000, 0); // quick fix to 'delete' it because of null references
         ape.dead = true;
+    }
+
+    gameOver() {
+        this.endText.alpha = 1;
+        this.endText2.alpha = 1;
+        this.gameEnded = true;
     }
 }
